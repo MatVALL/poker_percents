@@ -2,12 +2,12 @@
 #include <sys/time.h>
 #include "game.h"
 
+//TODO make the srand depend of the pid
 void initRand(){
 	struct timeval time;
 	gettimeofday(&time,NULL);
 	srand((time.tv_sec * 1000) + (time.tv_usec / 1000));
 }
-
 
 int main(void){
 	initRand();

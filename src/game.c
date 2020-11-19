@@ -17,7 +17,6 @@ void sortHand(Card ** cards, int length){
 }
 
 void shuffleDeck(Card ** cards, int length){
-	Card* cards_shuffled[52];
 	for (int ind=0;ind<length;ind ++){
 		int random_ind = ind + rand()%(length-ind);
 		Card * tmp =cards[ind];
@@ -42,9 +41,6 @@ int isBetter(Card * hand1[2],Card * hand2[2],Card ** deck,int cards_drawn){
 	for (int i = 0; i < 2+cards_drawn; i ++){
 		printf("%s ",cardToText(*fullhand1[i]));
 	}
-	printf("\n%d ",findPaire(fullhand1,7));
-	printf("%d ",findDoublePaire(fullhand1,7));
-	printf("%d\n",findBrelan(fullhand1,7));
 	return 0;
 }
 
@@ -63,10 +59,16 @@ Game *  makeGame(){
 	for (int card =0; card < 2;card ++)
 		g->hand[card]=cards[card];
 	for (int card =0; card < 50;card ++)
-		g->hand[card]=cards[card+2];
+		g->deck[card]=cards[card+2];
 	return g;
 }
 
 void destroyGame(Game * g){
-//TODO
+	for (int i = 0; i <2; i ++){
+		destroyCard(g->hand[i]);
+	}
+	for (int i = 0; i <50; i ++){
+		destroyCard(g->deck[i]);
+	}
+	free(g);
 }

@@ -7,11 +7,18 @@ START_TEST(test_import)
 }
 END_TEST
 
-Suite* testNothing(){
+START_TEST(test_import1)
+{
+  ck_assert_int_eq(0,1);
+}
+END_TEST
+
+Suite* testHands(){
   TCase *tc_core = tcase_create("Core");
   Suite* s = suite_create("Nothing");
 
   tcase_add_test(tc_core, test_import);
+  tcase_add_test(tc_core, test_import1);
   suite_add_tcase(s, tc_core);
   return s;
 }
@@ -21,7 +28,7 @@ int main(){
   Suite *s;
   SRunner *runner;
 
-  s = testNothing();
+  s = testHands();
   runner = srunner_create(s);
 
   srunner_run_all(runner, CK_NORMAL);
