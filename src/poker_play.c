@@ -26,6 +26,7 @@ int main(void){
 		printf("\t%s\n",cardToText(*g->deck[4]));
 
 		isBetter(g->hand,g->hand,g->deck,5);
+		destroyGame(g);
 	}
 	return 0;
 }
