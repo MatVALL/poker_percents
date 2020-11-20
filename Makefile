@@ -4,28 +4,33 @@ LIBS= -lm 	#utilisation de math.h
 
 _OBJS=card.o\
     game.o\
-		poker_play.o
+		hands.o
 OBJDIR=obj#le path vers les .o
 SDIR=src#le path vers les .c
 OBJS = $(patsubst %,$(OBJDIR)/%,$(_OBJS)) #remplacer src/ par obj/ dans les dépendances des .o
 
+MAIN=$(patsubst %,$(OBJDIR)/%,poker_play.o)
+
 _TESTS=check_hands.o
 TESTDIR=test
-TESTS = $(patsubst %,$(TESTSDIR)/%,$(_TESTS))
+TESTS = $(patsubst %,$(TESTDIR)/%,$(_TESTS))
 TESTLIBS= -lcheck -lm -lpthread -lrt -lsubunit
 
-all :: $(OBJS)
+all :: $(OBJS) $(MAIN)
 	$(CC) $(OBJS) -o poker_play -g ${LIBS} -Ilibs
 
 $(OBJDIR)/%.o: $(SDIR)/%.c
 	$(CC) -c ${FLAGS} $^ -Ilibs -o $@
 
 #TESTS
-$(TESTDIR)/%.o: $(TESTDIR)/%.c $(OBJ)
+$(TESTDIR)/%.o: $(TESTDIR)/%.c 
 	$(CC) -c ${FLAGS} $^ -Ilibs -o $@
 
-test :
-	$(CC) $(TESTS) $(OBJS) -o tests -g ${LIBS} ${TESTLIBS} -Ilibs
+test :: $(TESTS) $(OBJS)
+	$(CC) $(TESTS) $(OBJS) -o tests -g ${LIBS} ${TESTLIBS}
 
 clean :
 	rm -fr *.o
+	rm test/*.o
+	touch a.out tests poker_play
+	rm a.out tests poker_play

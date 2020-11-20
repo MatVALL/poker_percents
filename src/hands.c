@@ -1,3 +1,4 @@
+#include "hands.h"
 //TODO: BUG si cartes semblables pour la suite
 //TODO: BUG si AS-2 pour la suite !!!
 /*
@@ -8,7 +9,7 @@ int findPaire(Card ** hand,int length){
 	for (int i = length-2 ; i >=0  ;i --){
 		if (hand[i]->sign == hand[i+1]->sign)
 			return i;
-	}
+		}
 	return -1;
 }
 
@@ -99,7 +100,7 @@ int findFullPaire(Card ** hand,int length){
 */
 int findFullBrelan(Card ** hand,int length){
 	int brelan_beginning = findBrelan(hand,length);
-	if (findFullPaire()<0)
+	if (findFullPaire(hand,length)<0)
 		return -1;
 	return brelan_beginning;
 }
@@ -112,10 +113,10 @@ int findColoredFlush(Card ** hand,int length){
 	int colored_flush_length=1;
 
 	for (int i = length-2 ; i >=0  ;i --){
-		if(hand[i]->sign==hand[i+1]->c && hand[i]->color==hand[i+1]->color)
+		if(hand[i]->sign==hand[i+1]->sign && hand[i]->color==hand[i+1]->color)
 			colored_flush_length++;
 		else
-			colored_flush_length=1
+			colored_flush_length=1;
 		if (colored_flush_length>=5)
 			return i+colored_flush_length;
 	}

@@ -1,3 +1,19 @@
+#ifndef _hands___
+#include  "card.h"
+#define _hands___
+
+//TODO: BUG si cartes semblables pour la suite
+//TODO: BUG si AS-2 pour la suite !!!
+int findPaire(Card ** hand,int length);
+int findDoublePaireHighest(Card ** hand,int length);
+int findDoublePaireSecond(Card ** hand,int length);
+int findBrelan(Card ** hand,int length);
+int findFlush(Card ** hand,int length);
+int findColor(Card ** hand,int length);
+int findFullPaire(Card ** hand,int length);
+int findFullBrelan(Card ** hand,int length);
+int findColoredFlush(Card ** hand,int length);
+#endif
 /*
 RULES
   [Ah Kh Qh Jh Th] 	Royal Flush
@@ -21,15 +37,3 @@ RULES
   [Ac] 	High Card
     If no player has a pair or better, the one with the highest card wins. The ranking is Ace, Kind, Queen, Jack, Ten, Nine, Eight and so forth. If the two players have the same highest card, the one with the next highest out of his five best cards wins. The color of the cards doesn’t matter in Texas Hold’em.
 */
-
-//TODO: BUG si cartes semblables pour la suite
-//TODO: BUG si AS-2 pour la suite !!!
-int findPaire(Card ** hand,int length);
-int findDoublePaireHighest(Card ** hand,int length);
-int findDoublePaireSecond(Card ** hand,int length);
-int findBrelan(Card ** hand,int length);
-int findFlush(Card ** hand,int length);
-int findColor(Card ** hand,int length);
-int findFullPaire(Card ** hand,int length);
-int findFullBrelan(Card ** hand,int length);
-int findColoredFlush(Card ** hand,int length);

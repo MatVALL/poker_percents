@@ -1,3 +1,6 @@
+#ifndef __POKer_cards___
+#define __POKer_cards___
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<stdint.h>
@@ -25,3 +28,5 @@ typedef struct card{
 Card * makeCard(Color c, Sign s);
 char * cardToText(Card c);
 void destroyCard(Card * c);
+
+#endif

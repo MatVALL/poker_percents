@@ -16,6 +16,8 @@ void sortHand(Card ** cards, int length){
 	}
 }
 
+/** shuffle the set of cards of length length
+*/
 void shuffleDeck(Card ** cards, int length){
 	for (int ind=0;ind<length;ind ++){
 		int random_ind = ind + rand()%(length-ind);
@@ -25,26 +27,46 @@ void shuffleDeck(Card ** cards, int length){
 	}
 }
 
+/**
+	turn game in card array
+**/
+Card **  getTotalCards(Game * g,int cards_drawn){
+  Card ** fullhand1 = malloc(sizeof(Card*)*(2+cards_drawn));
+  fullhand1[0]= g->hand[0];
+  fullhand1[1]= g->hand[1];
+
+  for (int i = 0; i < cards_drawn; i ++){
+    fullhand1[i+2] = g->deck[i];
+  }
+  sortHand(fullhand1,2+cards_drawn);
+  return fullhand1;
+}
 
 /**
 	returns 1 if the hand1 is better, -1 if it is not and 0 if it is a draw
 **/
 int isBetter(Card * hand1[2],Card * hand2[2],Card ** deck,int cards_drawn){
 	Card ** fullhand1 = malloc(sizeof(Card*)*(2+cards_drawn));
+	Card ** fullhand2 = malloc(sizeof(Card*)*(2+cards_drawn));
 	fullhand1[0]= hand1[0]; fullhand1[1]= hand1[1];
+	fullhand2[0]= hand2[0]; fullhand2[1]= hand2[1];
 
 	for (int i = 0; i < cards_drawn; i ++){
 		fullhand1[i+2] = deck[i];
+		fullhand2[i+2] = deck[i];
 	}
 
 	sortHand(fullhand1,2+cards_drawn);
+	sortHand(fullhand2,2+cards_drawn);
 	for (int i = 0; i < 2+cards_drawn; i ++){
 		printf("%s ",cardToText(*fullhand1[i]));
 	}
 	return 0;
 }
 
-
+/**
+	create a game struct (destroy it !!)
+**/
 Game *  makeGame(){
 	Card* cards[52];
 	int ind = 0;
