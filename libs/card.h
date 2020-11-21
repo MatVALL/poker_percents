@@ -12,13 +12,12 @@
 #define PIQUE   4
 
 typedef uint8_t Color;
+typedef uint8_t Sign;
 
 #define VALET 11
 #define DAME  12
 #define ROI   13
-#define AS   14
-
-typedef uint8_t Sign;
+#define AS    14
 
 typedef struct card{
 	Sign sign;

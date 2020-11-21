@@ -11,7 +11,8 @@ OBJS = $(patsubst %,$(OBJDIR)/%,$(_OBJS)) #remplacer src/ par obj/ dans les dép
 
 MAIN=$(patsubst %,$(OBJDIR)/%,poker_play.o)
 
-_TESTS=check_hands.o
+_TESTS=main_test.o\
+			 test_hands.o
 TESTDIR=test
 TESTS = $(patsubst %,$(TESTDIR)/%,$(_TESTS))
 TESTLIBS= -lcheck -lm -lpthread -lrt -lsubunit
@@ -23,7 +24,7 @@ $(OBJDIR)/%.o: $(SDIR)/%.c
 	$(CC) -c ${FLAGS} $^ -Ilibs -o $@
 
 #TESTS
-$(TESTDIR)/%.o: $(TESTDIR)/%.c 
+$(TESTDIR)/%.o: $(TESTDIR)/%.c
 	$(CC) -c ${FLAGS} $^ -Ilibs -o $@
 
 test :: $(TESTS) $(OBJS)
