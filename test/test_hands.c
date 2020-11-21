@@ -45,14 +45,14 @@ START_TEST(test_double_pair)
     AS,PIQUE,
     AS,PIQUE
   );
-  ck_assert_int_eq(3,findDoublePaireHighest(c,7));
-  ck_assert_int_eq(1,findDoublePaireHighest(c,7));
+  ck_assert_int_eq(3,findDoublePaireHighest(c,5));
+  ck_assert_int_eq(1,findDoublePaireSecond(c,5));
 }
 END_TEST
 
 START_TEST(test_brelan)
 {
-  Card ** c = makeCardsArrayFromArgs(5,
+  Card ** c = makeCardsArrayFromArgs(6,
     2,PIQUE,
     3,PIQUE,
     3,COEUR,
@@ -60,7 +60,7 @@ START_TEST(test_brelan)
     AS,COEUR,
     AS,TREFLE
   );
-  ck_assert_int_eq(3,findBrelan(c,7));
+  ck_assert_int_eq(3,findBrelan(c,6));
 
 }
 END_TEST
@@ -96,14 +96,21 @@ START_TEST(test_flush2)
 END_TEST
 
 START_TEST(test_color)
-{}
+{
+  ck_abort_msg("unimplemented");
+}
 END_TEST
 
 START_TEST(test_full)
-{}
+{
+  ck_abort_msg("unimplemented");
+}
 END_TEST
+
 START_TEST(test_colored_flush)
-{}
+{
+  ck_abort_msg("unimplemented");
+}
 END_TEST
 
 Suite* testHands(){
