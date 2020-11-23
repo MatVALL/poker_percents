@@ -16,7 +16,7 @@ Card ** makeCardsArrayFromArgs(int n_cards,...){
 
 START_TEST(none)
 {
-  Card ** c = makeCardsArrayFromArgs(3,
+  Card ** c = makeCardsArrayFromArgs(5,
     AS,PIQUE,
     3,CARREAU,
     2,COEUR,
@@ -44,7 +44,7 @@ START_TEST(test_pair)
     3,COEUR,
     3,CARREAU
   );
-  ck_assert_int_eq(1,findPaire(c,3));
+  ck_assert_int_eq(2,findPaire(c,3));
 }
 END_TEST
 
@@ -57,8 +57,9 @@ START_TEST(test_double_pair)
     AS,PIQUE,
     AS,PIQUE
   );
-  ck_assert_int_eq(3,findDoublePaireHighest(c,5));
-  ck_assert_int_eq(1,findDoublePaireSecond(c,5));
+  ck_assert_int_eq(2,findDoublePaireSecond(c,5));
+  ck_assert_int_eq(4,findDoublePaireHighest(c,5));
+
 }
 END_TEST
 
@@ -80,15 +81,15 @@ END_TEST
 START_TEST(test_flush)
 {
   Card ** c = makeCardsArrayFromArgs(7,
-    AS,PIQUE,
     2,PIQUE,
     3,COEUR,
     3,CARREAU,
     3,PIQUE,
     4,PIQUE,
-    5,PIQUE
+    5,PIQUE,
+    AS,PIQUE
   );
-  ck_assert_int_eq(0,findFlush(c,1));
+  ck_assert_int_eq(5,findFlush(c,7));
 }
 END_TEST
 
@@ -97,13 +98,13 @@ START_TEST(test_flush2)
   Card ** c = makeCardsArrayFromArgs(7,
     2,PIQUE,
     3,COEUR,
-    9,PIQUE,
     10,PIQUE,
     VALET,PIQUE,
+    DAME,PIQUE,
     ROI,PIQUE,
     AS,PIQUE
   );
-  ck_assert_int_eq(2,findFlush(c,7));
+  ck_assert_int_eq(6,findFlush(c,7));
 }
 END_TEST
 
@@ -118,7 +119,7 @@ START_TEST(test_color)
     ROI,TREFLE,
     AS,PIQUE
   );
-  ck_assert_int_eq(0,findColor(c,7));
+  ck_assert_int_eq(6,findColor(c,7));
 }
 END_TEST
 
@@ -133,7 +134,7 @@ START_TEST(test_full)
     VALET,PIQUE,
     VALET,CARREAU
   );
-  ck_assert_int_eq(0,findFullPaire(c,7));
+  ck_assert_int_eq(1,findFullPaire(c,7));
   ck_assert_int_eq(4,findFullBrelan(c,7));
 }
 END_TEST
@@ -143,13 +144,13 @@ START_TEST(test_colored_flush)
   Card ** c = makeCardsArrayFromArgs(7,
     2,PIQUE,
     3,COEUR,
-    9,PIQUE,
     10,PIQUE,
     VALET,PIQUE,
-    ROI,TREFLE,
+    DAME,PIQUE,
+    ROI,PIQUE,
     AS,PIQUE
   );
-  ck_assert_int_eq(0,findColoredFlush(c,7));
+  ck_assert_int_eq(6,findColoredFlush(c,7));
 }
 END_TEST
 

@@ -8,7 +8,7 @@
 int findPaire(Card ** hand,int length){
 	for (int i = length-2 ; i >=0  ;i --){
 		if (hand[i]->sign == hand[i+1]->sign)
-			return i;
+			return i+1;
 		}
 	return -1;
 }
@@ -17,7 +17,7 @@ int findPaire(Card ** hand,int length){
   returns -1
 */
 int findDoublePaireHighest(Card ** hand,int length){
-	int first_pair  = -1;
+	int first_pair  = findPaire(hand,length);
 	for (int i = length-2 ; i >=0  ;i --){
 		if (hand[i]->sign == hand[i+1]->sign){
 			if (first_pair >= 0)
@@ -31,11 +31,11 @@ int findDoublePaireHighest(Card ** hand,int length){
   returns -1
 */
 int findDoublePaireSecond(Card ** hand,int length){
-	int first_pair  = -1;
-	for (int i = length-2 ; i >=0  ;i --){
+	int first_pair  = findPaire(hand,length);
+	for (int i = first_pair-2 ; i >=0  ;i --){
 		if (hand[i]->sign == hand[i+1]->sign){
 			if (first_pair >= 0)
-				return i;
+				return i+1;
 		}
 	}
 	return -1;
@@ -58,12 +58,14 @@ int findBrelan(Card ** hand,int length){
 	returns -1 if not found
 */
 int findFlush(Card ** hand,int length){
-	int flush_length=1;
-	for (int i = length-1 ; i >=0  ;i --){
-		if(flush_length >= 5)
-			return i-flush_length;
-		if (hand[i]->sign == hand[i+1]->sign+1)
+	int flush_length=0;
+	for (int i = length-2 ; i >=0  ;i --){
+		if (hand[i]->sign+1 == hand[i+1]->sign)
 			flush_length ++;
+		else if (hand[i]->sign != hand[i+1]->sign)
+			flush_length=1;
+		if(flush_length >= 5 || (flush_length >= 4 && hand[0]->sign == 2 &&  hand[length-1]->sign == 14))
+			return i+flush_length;
 	}
 	return -1;
 }
@@ -74,10 +76,13 @@ int findFlush(Card ** hand,int length){
 */
 int findColor(Card ** hand,int length){
 	int counts[4];
+	for (int i = 0 ; i < 4 ; i ++)
+		counts[i]=0;
 	for (int i = 0 ; i < length ; i ++)
-		counts[hand[i]->color]++;
+		counts[hand[i]->color-1]++;
+
 	for (int i = length-1 ; i >=0  ;i --){
-		if(counts[hand[i]->color]>=5)
+		if(counts[hand[i]->color-1]>=5)
 			return i;
 	}
 	return -1;
@@ -87,11 +92,12 @@ int findColor(Card ** hand,int length){
 	returns -1 if there is no Full
 */
 int findFullPaire(Card ** hand,int length){
+
 	int brelan_beginning = findBrelan(hand,length);
 	if (brelan_beginning<0)
 		return -1;
 
-	int pairIndex = findPaire(hand+brelan_beginning+3,length - brelan_beginning);
+	int pairIndex = findPaire(hand+brelan_beginning+3,length - brelan_beginning-3);
 	return (pairIndex<0)? findPaire(hand,brelan_beginning): pairIndex;
 }
 
@@ -111,14 +117,21 @@ int findFullBrelan(Card ** hand,int length){
 */
 int findColoredFlush(Card ** hand,int length){
 	int colored_flush_length=1;
+	int current_color=hand[length-1]->color;
+	int last_index=length-1;
 
 	for (int i = length-2 ; i >=0  ;i --){
-		if(hand[i]->sign==hand[i+1]->sign && hand[i]->color==hand[i+1]->color)
+		if(hand[i]->sign+1==hand[i+1]->sign &&
+			 hand[i]->color==current_color)
 			colored_flush_length++;
-		else
+		else if (hand[i]->sign==hand[i+1]->sign)
+			continue;
+		else{
+			last_index=i;
 			colored_flush_length=1;
+		}
 		if (colored_flush_length>=5)
-			return i+colored_flush_length;
+			return last_index;
 	}
 	return -1;
 }
