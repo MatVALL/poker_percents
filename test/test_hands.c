@@ -19,9 +19,21 @@ START_TEST(none)
   Card ** c = makeCardsArrayFromArgs(3,
     AS,PIQUE,
     3,CARREAU,
-    2,COEUR
+    2,COEUR,
+    5,PIQUE,
+    VALET,COEUR
   );
-  ck_assert_int_eq(-1,findPaire(c,3));
+  ck_assert_int_eq(-1,findPaire(c,5));
+  ck_assert_int_eq(-1,findDoublePaireSecond(c,5));
+  ck_assert_int_eq(-1,findDoublePaireHighest(c,5));
+  ck_assert_int_eq(-1,findPaire(c,5));
+  ck_assert_int_eq(-1,findBrelan(c,5));
+  ck_assert_int_eq(-1,findFlush(c,5));
+  ck_assert_int_eq(-1,findColor(c,5));
+  ck_assert_int_eq(-1,findFullPaire(c,5));
+  ck_assert_int_eq(-1,findFullBrelan(c,5));
+  ck_assert_int_eq(-1,findColoredFlush(c,5));
+
 }
 END_TEST
 
@@ -91,25 +103,53 @@ START_TEST(test_flush2)
     ROI,PIQUE,
     AS,PIQUE
   );
-  ck_assert_int_eq(2,findFlush(c,1));
+  ck_assert_int_eq(2,findFlush(c,7));
 }
 END_TEST
 
 START_TEST(test_color)
 {
-  ck_abort_msg("unimplemented");
+  Card ** c = makeCardsArrayFromArgs(7,
+    2,PIQUE,
+    3,COEUR,
+    9,PIQUE,
+    10,PIQUE,
+    VALET,PIQUE,
+    ROI,TREFLE,
+    AS,PIQUE
+  );
+  ck_assert_int_eq(0,findColor(c,7));
 }
 END_TEST
 
 START_TEST(test_full)
 {
-  ck_abort_msg("unimplemented");
+  Card ** c = makeCardsArrayFromArgs(7,
+    2,PIQUE,
+    2,COEUR,
+    9,PIQUE,
+    10,PIQUE,
+    VALET,COEUR,
+    VALET,PIQUE,
+    VALET,CARREAU
+  );
+  ck_assert_int_eq(0,findFullPaire(c,7));
+  ck_assert_int_eq(4,findFullBrelan(c,7));
 }
 END_TEST
 
 START_TEST(test_colored_flush)
 {
-  ck_abort_msg("unimplemented");
+  Card ** c = makeCardsArrayFromArgs(7,
+    2,PIQUE,
+    3,COEUR,
+    9,PIQUE,
+    10,PIQUE,
+    VALET,PIQUE,
+    ROI,TREFLE,
+    AS,PIQUE
+  );
+  ck_assert_int_eq(0,findColoredFlush(c,7));
 }
 END_TEST
 
