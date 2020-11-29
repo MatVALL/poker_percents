@@ -8,7 +8,6 @@ _OBJS=card.o\
 OBJDIR=obj#le path vers les .o
 SDIR=src#le path vers les .c
 OBJS = $(patsubst %,$(OBJDIR)/%,$(_OBJS)) #remplacer src/ par obj/ dans les dépendances des .o
-
 MAIN=$(patsubst %,$(OBJDIR)/%,poker_play.o)
 
 _TESTS=main_test.o\
@@ -18,7 +17,7 @@ TESTS = $(patsubst %,$(TESTDIR)/%,$(_TESTS))
 TESTLIBS= -lcheck -lm -lpthread -lrt -lsubunit
 
 all :: $(OBJS) $(MAIN)
-	$(CC) $(OBJS) -o poker_play -g ${LIBS} -Ilibs
+	$(CC) $^ -o poker_play -g ${LIBS} -Ilibs
 
 $(OBJDIR)/%.o: $(SDIR)/%.c
 	$(CC) -c ${FLAGS} $^ -Ilibs -o $@
