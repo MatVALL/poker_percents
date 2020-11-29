@@ -2,8 +2,6 @@
 #include  "card.h"
 #define _hands___
 
-//TODO: BUG si cartes semblables pour la suite
-//TODO: BUG si AS-2 pour la suite !!!
 int findPaire(Card ** hand,int length);
 int findDoublePaireHighest(Card ** hand,int length);
 int findDoublePaireSecond(Card ** hand,int length);
