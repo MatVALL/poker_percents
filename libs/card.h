@@ -6,18 +6,8 @@
 #include<stdint.h>
 #include<string.h>
 
-#define CARREAU 1
-#define COEUR   2
-#define TREFLE  3
-#define PIQUE   4
-
-typedef uint8_t Color;
-typedef uint8_t Sign;
-
-#define VALET 11
-#define DAME  12
-#define ROI   13
-#define AS    14
+typedef enum color{CARREAU,COEUR,TREFLE,PIQUE} Color;
+typedef enum sign{VALET=11,DAME=12,ROI=13,AS=14} Sign;
 
 typedef struct card{
 	Sign sign;
