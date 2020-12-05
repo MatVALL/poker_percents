@@ -2,7 +2,7 @@
 #include "hands.h"
 
 /** sort by sign
-	tri pas opti mais 7 cartes max donc osef**/
+	tri pas opti mais 7 cartes max.**/
 void sortHand(Card ** cards, int length){
 	for (int i =0; i < length-1 ; i++){
 		int max_ind=i;
@@ -59,7 +59,7 @@ int isBetter(Card * hand1[2],Card * hand2[2],Card ** drawn,int cards_drawn){
 	sortHand(fullhand1,2+cards_drawn);
 	sortHand(fullhand2,2+cards_drawn);
 	int length=2+cards_drawn;
-	
+
 	int (*comparated_functions[9])(Card ** hand,int length) = {
 		*findColoredFlush,
 		*findFullBrelan,
@@ -105,6 +105,9 @@ Game *  makeGame(){
 	return g;
 }
 
+/*
+	destroy every card in the game, and free the memory.
+*/
 void destroyGame(Game * g){
 	for (int i = 0; i <2; i ++){
 		destroyCard(g->hand[i]);

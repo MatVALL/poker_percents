@@ -135,7 +135,7 @@ int findFullBrelan(Card ** hand,int length){
 */
 int findColoredFlush(Card ** hand,int length){
 	int colored_flush_length=1;
-	int current_color=hand[length-1]->color;
+	Color current_color=hand[length-1]->color;
 	int last_index=length-1;
 
 	for (int i = length-2 ; i >=0  ;i --){
