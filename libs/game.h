@@ -1,13 +1,16 @@
 #ifndef games___poker__
 #define games___poker__
+
 #include "card.h"
 #include<time.h>
 #include<stdbool.h>
 
+#define HANDSIZE 2
+#define DECKSIZE 52
 
 typedef struct game{
-	Card * hand[2];
-	Card * deck[50];
+	Card * hand[HANDSIZE];
+	Card * deck[DECKSIZE-HANDSIZE];
 }Game;
 
 Game * makeGame();

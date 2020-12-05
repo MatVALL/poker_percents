@@ -11,22 +11,24 @@ void initRand(){
 
 int main(void){
 	initRand();
-	for (int i = 0 ; i < 1 ; i ++){
-		Game * g = makeGame();
-		printf("hand:");
-		printf("\t\t%s %s\n",cardToText(*g->hand[0]),cardToText(*g->hand[1]));
+	Game * g = makeGame();
+	printf("hand1:");
+	printf("\t\t%s %s\n",cardToText(*g->hand[0]),cardToText(*g->hand[1]));
 
-		printf("first draw:");
-		printf("\t%s %s %s\n",cardToText(*g->deck[0]),cardToText(*g->deck[1]),cardToText(*g->deck[2]));
+	printf("hand2:");
+	printf("\t\t%s %s\n",cardToText(*g->deck[5]),cardToText(*g->deck[6]));
 
-		printf("second draw:");
-		printf("\t%s\n",cardToText(*g->deck[3]));
+	printf("first draw:");
+	printf("\t%s %s %s\n",cardToText(*g->deck[0]),cardToText(*g->deck[1]),cardToText(*g->deck[2]));
 
-		printf("third draw:");
-		printf("\t%s\n",cardToText(*g->deck[4]));
+	printf("second draw:");
+	printf("\t%s\n",cardToText(*g->deck[3]));
 
-		isBetter(g->hand,g->hand,g->deck,5);
-		destroyGame(g);
-	}
+	printf("third draw:");
+	printf("\t%s\n",cardToText(*g->deck[4]));
+
+	printf("%d\n",isBetter(g->hand,g->deck,g->deck,5));
+	destroyGame(g);
+
 	return 0;
 }

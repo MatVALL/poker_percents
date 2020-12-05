@@ -54,18 +54,36 @@ int findBrelan(Card ** hand,int length){
 }
 
 /*
-	returns the index of the highest card in a flush,
+	returns the index of the highest card in a flush
 	returns -1 if not found
 */
 int findFlush(Card ** hand,int length){
-	int flush_length=0;
-	for (int i = length-2 ; i >=0  ;i --){
+	int flush_length=1;
+	int highest_id = length - 1;
+	for (int i = length-2 ; i >=0  ;i --)
+	{
+
+		if (hand[i]->sign == hand[i+1]->sign)
+		{
+			continue;
+		}
 		if (hand[i]->sign+1 == hand[i+1]->sign)
+		{
 			flush_length ++;
-		else if (hand[i]->sign != hand[i+1]->sign)
+			if (hand[i]->sign==2 && hand[length-1]->sign==AS)
+			{
+					flush_length ++;
+			}
+		}
+		else
+		{
 			flush_length=1;
-		if(flush_length >= 5 || (flush_length >= 4 && hand[0]->sign == 2 &&  hand[length-1]->sign == 14))
-			return i+flush_length;
+			highest_id = i;
+		}
+		if(flush_length >= 5)
+		{
+			return highest_id;
+		}
 	}
 	return -1;
 }
@@ -79,10 +97,10 @@ int findColor(Card ** hand,int length){
 	for (int i = 0 ; i < 4 ; i ++)
 		counts[i]=0;
 	for (int i = 0 ; i < length ; i ++)
-		counts[hand[i]->color-1]++;
+		counts[hand[i]->color]++;
 
 	for (int i = length-1 ; i >=0  ;i --){
-		if(counts[hand[i]->color-1]>=5)
+		if(counts[hand[i]->color]>=5)
 			return i;
 	}
 	return -1;
