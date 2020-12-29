@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include "game.h"
+#include "best.h"
 
 //TODO make the srand depend of the pid
 void initRand(){
@@ -9,26 +10,92 @@ void initRand(){
 	srand((time.tv_sec * 1000) + (time.tv_usec / 1000));
 }
 
-int main(void){
-	initRand();
-	Game * g = makeGame();
-	printf("hand1:");
-	printf("\t\t%s %s\n",cardToText(*g->hand[0]),cardToText(*g->hand[1]));
+//memory leak : free cardToText
+void printGame(Game * g){
+	printf("hand:\n");
+	printCard(*g->hand[0]);printCard(*g->hand[1]);
+	for(int i=0;i<g->n_drawn;i++){
+		printCard(*(g->drawn[i]));
+	}
+}
 
-	printf("hand2:");
-	printf("\t\t%s %s\n",cardToText(*g->deck[5]),cardToText(*g->deck[6]));
+/**
+	return true if the card given is in the hand or has been drawn
+	return false otherwise
+**/
+int cardIsInGame(Card * c, Game * g){
+	for(int i=0;i<g->n_drawn;i++){
+		if(g->drawn[i]->sign==c->sign && g->drawn[i]->color==c->color)
+			return 1;
+	}
+	if(g->drawn[0]->sign==c->sign && g->drawn[0]->color==c->color)
+		return 1;
+	if(g->drawn[1]->sign==c->sign && g->drawn[1]->color==c->color)
+		return 1;
+	return 0;
+}
 
-	printf("first draw:");
-	printf("\t%s %s %s\n",cardToText(*g->deck[0]),cardToText(*g->deck[1]),cardToText(*g->deck[2]));
+double getProba(Game * g){
+	int n_parties_jouees = 0;
+	int n_gagnees = 0;
 
-	printf("second draw:");
-	printf("\t%s\n",cardToText(*g->deck[3]));
+	Card** game_hand = concatCards(g->hand,2,g->drawn,g->n_drawn);
+	sortHand(game_hand,2+g->n_drawn);
 
-	printf("third draw:");
-	printf("\t%s\n",cardToText(*g->deck[4]));
+	for(int i = 0; i < 52; i++){
+		printf("!!!\n");
+		for(int j = 0; j < 52; j++){
+			Color c1 = i%4;
+			Color c2 = j%4;
+			Sign s1 = (i/4)+2;
+			Sign s2 = (j/4)+2;
 
-	printf("%d\n",isBetter(g->hand,g->deck,g->deck,5));
+			Card * card1 = makeCard(c1, s1);
+			Card * card2 = makeCard(c2, s2);
+			Card ** hand = malloc(sizeof(Card*)*2);
+
+			if(hand==NULL){
+				perror("malloc");
+				exit(1);
+			}
+			hand[0]=card1;
+			hand[1]=card2;
+
+			Card** simulated_hand = concatCards(hand,2,g->drawn,g->n_drawn);
+			sortHand(simulated_hand,2+g->n_drawn);
+
+			if(!cardIsInGame(card1,g)&& !cardIsInGame(card2,g)){
+				n_parties_jouees++;
+				if(isBetter(game_hand,simulated_hand,2+g->n_drawn)>0){
+					n_gagnees++;
+				}
+				else{
+					//printCard(*card1);
+					//printf("\t%s\n",cardToText(*card2));
+				}
+			}
+			free(simulated_hand);
+			free(hand);
+			destroyCard(card1);
+			destroyCard(card2);
+		}
+	}
+	free(game_hand);
+	return (double)n_gagnees/n_parties_jouees;
+}
+
+int main(int argc, char**argv){
+	if(argc<2){
+		fprintf(stderr, "Usage : ./poker_play game_file\n");
+		exit(0);
+	}
+	printf("creating game\n");
+	Game * g = makeGame(argv[1]);
+	//printf("printing game\n");
+	//printGame(g);
+	printf("calculating ...\n");
+	getProba(g);
+	printf("done.\n");
 	destroyGame(g);
-
 	return 0;
 }

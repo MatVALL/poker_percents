@@ -2,15 +2,33 @@
 #include  "card.h"
 #define _hands___
 
-int findPaire(Card ** hand,int length);
-int findDoublePaireHighest(Card ** hand,int length);
-int findDoublePaireSecond(Card ** hand,int length);
-int findBrelan(Card ** hand,int length);
-int findFlush(Card ** hand,int length);
-int findColor(Card ** hand,int length);
-int findFullPaire(Card ** hand,int length);
-int findFullBrelan(Card ** hand,int length);
-int findColoredFlush(Card ** hand,int length);
+
+typedef enum setType{
+  SINGLE,
+  PAIR,
+  DOUBLE,
+  BRELAN,
+  FLUSH,
+  COLOR,
+  FULL,
+  SQUARE,
+  COLORED,
+  UNDEFINED
+} SetType;
+
+typedef struct cardSet{
+  Card ** set;
+  Card ** remaining;//les cartes restantes du represente
+  SetType type;
+  int set_size;
+  int total_size;
+}CardSet;
+
+CardSet * makeCardSet(Card ** hand,int length);
+CardSet * initCardSet(Card ** hand,int length);
+void destroyCardSet(CardSet *cs);
+void addCardToSet(CardSet * cs, Card * c);
+
 #endif
 /*
 RULES

@@ -28,83 +28,67 @@ void shuffleDeck(Card ** cards, int length){
 	}
 }
 
-/**
-	turn game in card array
-**/
-Card **  getTotalCards(Game * g,int cards_drawn){
-  Card ** fullhand1 = malloc(sizeof(Card*)*(2+cards_drawn));
-  fullhand1[0]= g->hand[0];
-  fullhand1[1]= g->hand[1];
-
-  for (int i = 0; i < cards_drawn; i ++){
-    fullhand1[i+2] = g->deck[i];
-  }
-  sortHand(fullhand1,2+cards_drawn);
-  return fullhand1;
+Color getColor(char c){
+	switch(c){
+		case '%': return TREFLE;
+		case '<': return COEUR;
+		case '>': return PIQUE;
+		case '#': return CARREAU;
+		default : return -1;
+	}
 }
 
-/**
-	returns 1 if the hand1 is better, -1 if it is not and 0 if it is a draw
-**/
-int isBetter(Card * hand1[2],Card * hand2[2],Card ** drawn,int cards_drawn){
-	Card ** fullhand1 = malloc(sizeof(Card*)*(2+cards_drawn));
-	Card ** fullhand2 = malloc(sizeof(Card*)*(2+cards_drawn));
-	fullhand1[0]= hand1[0]; fullhand1[1]= hand1[1];
-	fullhand2[0]= hand2[0]; fullhand2[1]= hand2[1];
-
-	for (int i = 0; i < cards_drawn; i ++){
-		fullhand1[i+2] = drawn[i];
-		fullhand2[i+2] = drawn[i];
-	}
-	sortHand(fullhand1,2+cards_drawn);
-	sortHand(fullhand2,2+cards_drawn);
-	int length=2+cards_drawn;
-
-	int (*comparated_functions[9])(Card ** hand,int length) = {
-		*findColoredFlush,
-		*findFullBrelan,
-		*findFullPaire,
-		*findColor,
-		*findFlush,
-		*findBrelan,
-		*findDoublePaireSecond,
-		*findDoublePaireHighest,
-		*findPaire
-	};
-	for (int i=0; i < 9;i++){
-		int (*func)(Card ** hand,int length) = comparated_functions[i];
-		printf("%d %d\n",func(fullhand1,length),func(fullhand2,length));
-		if(func(fullhand1,length)>=0 && func(fullhand2,length)<0)
-			return 1;
-		if(func(fullhand2,length)>=0 && func(fullhand1,length)<0)
-			return -1;
-		if(func(fullhand2,length)>=0 && func(fullhand1,length)>=0)
-			return 1000;
-	}
-	return 0;
-}
 
 /**
-	create a game struct (destroy it !!)
+	create a game from argc/argv (the process input)
 **/
-Game *  makeGame(){
-	Card* cards[52];
-	int ind = 0;
-	for (int sign = 2; sign <= AS; sign ++){
-		for (int color = 0; color < 4; color ++){
-			cards[ind++] = makeCard(color,sign);
+Game *  makeGame(char * path){
+//	Card** cards =  makeDeck();
+	Game * g = malloc(sizeof(Game));
+	if(g==NULL)
+	{
+		perror("malloc");
+		exit(1);
+	}
+	g->hand = malloc(sizeof(Card*)*HANDSIZE);
+	g->drawn = malloc(sizeof(Card*)*5);
+	if(g->hand==NULL||g->drawn==NULL)
+	{
+		perror("malloc");
+		exit(1);
+	}
+	g->n_drawn=0;
+	//read hand
+	char line[10000];
+	FILE * f;
+	if(!(f=fopen(path,"r"))){
+		perror("fopen");
+		exit(1);
+	}
+	int nread = 2;//
+	while(fgets(line,10000,f)){
+		if(line[0]=='#')
+			continue;
+		int sign1, sign2, sign3;
+		char c1, c2, c3;
+		if(nread==2 && sscanf(line,"%d%c %d%c",&sign1,&c1,&sign2,&c2)>=2){
+			g->hand[0]=makeCard(getColor(c1),sign1==1?14:sign1);
+			g->hand[1]=makeCard(getColor(c2),sign2==1?14:sign1);
+			nread=3;
+		}
+		else if(nread==3 && sscanf(line,"%d%c %d%c %d%c",&sign1,&c1,&sign2,&c2,&sign3,&c3)>=6){
+			g->drawn[0]=makeCard(getColor(c1),sign1==1?14:sign1);
+			g->drawn[1]=makeCard(getColor(c2),sign2==1?14:sign2);
+			g->drawn[2]=makeCard(getColor(c3),sign3==1?14:sign3);
+			g->n_drawn=3;
+			nread=1;
+		}
+		else if(nread==1&&sscanf(line,"%d%c",&sign1,&c1)>=2){
+			g->drawn[g->n_drawn++]=makeCard(getColor(c1),sign1==1?14:sign1);
 		}
 	}
-	shuffleDeck(cards,52);
-
-	Game *  g = (Game*)malloc(sizeof(Game));
-	for (int card =0; card < 2;card ++)
-		g->hand[card]=cards[card];
-	for (int card =0; card < 50;card ++)
-		g->deck[card]=cards[card+2];
 	return g;
 }
-
 /*
 	destroy every card in the game, and free the memory.
 */
@@ -112,8 +96,10 @@ void destroyGame(Game * g){
 	for (int i = 0; i <2; i ++){
 		destroyCard(g->hand[i]);
 	}
-	for (int i = 0; i <50; i ++){
-		destroyCard(g->deck[i]);
+	for (int i = 0; i <g->n_drawn; i ++){
+		destroyCard(g->drawn[i]);
 	}
+	free(g->drawn);
+	free(g->hand);
 	free(g);
 }

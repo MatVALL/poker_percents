@@ -1,155 +1,266 @@
 #include "hands.h"
-//TODO: BUG si cartes semblables pour la suite
-//TODO: BUG si AS-2 pour la suite !!!
-/*
-	return the index of the biggest paire
-	returns -1 if not found
-*/
-int findPaire(Card ** hand,int length){
-	for (int i = length-2 ; i >=0  ;i --){
-		if (hand[i]->sign == hand[i+1]->sign)
-			return i+1;
-		}
-	return -1;
+
+void swap(Card ** cards,int ind1, int ind2){
+	Card * tmp = cards[ind2];
+	cards[ind2] = cards[ind1];
+	cards[ind1] = tmp;
 }
 
-/*return the index of the biggest paire
-  returns -1
-*/
-int findDoublePaireHighest(Card ** hand,int length){
-	int first_pair  = findPaire(hand,length);
-	for (int i = length-2 ; i >=0  ;i --){
-		if (hand[i]->sign == hand[i+1]->sign){
-			if (first_pair >= 0)
-				return first_pair;
-		}
-	}
-	return -1;
-}
+//TPDP FIX:
 
-/*return the index of the 2nd biggest paire
-  returns -1
-*/
-int findDoublePaireSecond(Card ** hand,int length){
-	int first_pair  = findPaire(hand,length);
-	for (int i = first_pair-2 ; i >=0  ;i --){
-		if (hand[i]->sign == hand[i+1]->sign){
-			if (first_pair >= 0)
-				return i+1;
-		}
-	}
-	return -1;
-}
-
-/*
-  retourne la position de la carte au debut du plus grand brelan trouvé
-	returns -1 if not found
-*/
-int findBrelan(Card ** hand,int length){
-	for (int i = length-3 ; i >=0  ;i --){
-		if (hand[i]->sign == hand[i+1]->sign && hand[i+1]->sign == hand[i+2]->sign)
-			return i;
-	}
-	return -1;
-}
-
-/*
-	returns the index of the highest card in a flush
-	returns -1 if not found
-*/
-int findFlush(Card ** hand,int length){
-	int flush_length=1;
-	int highest_id = length - 1;
-	for (int i = length-2 ; i >=0  ;i --)
-	{
-
-		if (hand[i]->sign == hand[i+1]->sign)
-		{
-			continue;
-		}
-		if (hand[i]->sign+1 == hand[i+1]->sign)
-		{
-			flush_length ++;
-			if (hand[i]->sign==2 && hand[length-1]->sign==AS)
-			{
-					flush_length ++;
+void removeFromRemaining(CardSet * cs, Card * c){
+		for(int i = 0 ; i < cs->total_size-cs->set_size-1;i++){
+			if(cs->remaining[i]==c){
+				swap(cs->remaining,i,cs->total_size-cs->set_size-1);
+				return;
 			}
 		}
-		else
-		{
-			flush_length=1;
-			highest_id = i;
-		}
-		if(flush_length >= 5)
-		{
-			return highest_id;
-		}
-	}
-	return -1;
 }
 
-/*
-	returns the index of the highest card in a colored flush,
-	returns -1 if not found
-*/
-int findColor(Card ** hand,int length){
-	int counts[4];
-	for (int i = 0 ; i < 4 ; i ++)
-		counts[i]=0;
-	for (int i = 0 ; i < length ; i ++)
-		counts[hand[i]->color]++;
+void addToSet(CardSet * cs, Card * c){
+		cs->set[cs->set_size++]=c;
+}
+
+
+void addCardToSet(CardSet * cs, Card * c){
+	removeFromRemaining(cs, c);
+	addToSet(cs, c);
+}
+
+//==============================================================================
+
+void fillSimple(CardSet* cs,Card ** hand,int length){
+	addCardToSet(cs,hand[length-1]);
+	cs->type=SINGLE;
+}
+
+void fillPair(CardSet* cs,Card ** hand,int length){
+	for (int i = length-2 ; i >=0  ;i --){
+		if (hand[i]->sign == hand[i+1]->sign){
+			addCardToSet(cs,hand[i+1]);
+			addCardToSet(cs,hand[i]);
+			cs->type=PAIR;
+		}
+	}
+}
+
+void fillBrelan(CardSet*cs ,Card ** hand,int length){
+	for (int i = length-3 ; i >=0  ;i --){
+		if (hand[i]->sign == hand[i+1]->sign && hand[i+1]->sign == hand[i+2]->sign){
+			addCardToSet(cs,hand[i+2]);
+			addCardToSet(cs,hand[i+1]);
+			addCardToSet(cs,hand[i]);
+			cs->type=BRELAN;
+		}
+	}
+}
+
+void fillDoublePair(CardSet*cs ,Card ** hand,int length){
+	int counter[13];//compteur des cartes, 0 et 1 sont absents, donc
+	for(int i=0;i<14;i++)
+		counter[i]=0;
+	for(int i=0;i<length;i++)
+		counter[hand[i]->sign-2]++;
+	int biggest_pair = -1;
+	int secd_biggest = -1;
+
+	for(int i=0;i<14;i++)
+		if(counter[i]>=2)
+			biggest_pair=i;
+	for(int i=0;i<14;i++)
+		if(counter[i]>=2 && i != biggest_pair)
+			secd_biggest=i;
+
+	if(biggest_pair<0 || secd_biggest<0)
+		return;
+
+	for(int i=0;i<length;i++)
+		if(hand[i]->sign==(Sign)biggest_pair)
+			addCardToSet(cs,hand[i]);
+	for(int i=0;i<length;i++)
+		if(hand[i]->sign==(Sign)secd_biggest)
+			addCardToSet(cs,hand[i]);
+	cs->type=DOUBLE;
+}
+
+void fillFlush(CardSet*cs ,Card ** hand,int length){
+	int indexes[5];
+	int flush_length=1;
+	indexes[0] = 	length - 1;
+	for (int i = length-2 ; i >=0  ;i --)
+	{
+		if (hand[i]->sign == hand[indexes[flush_length-1]]->sign)
+			continue;
+		if (hand[i]->sign+1 == hand[i+1]->sign)
+			indexes[flush_length++]=i+1;
+		else{
+			flush_length=1;
+			indexes[0] = i;
+		}
+		if(flush_length >= 5){
+			cs->type=FLUSH;
+			for(int j=0;j<5;j++)
+				addCardToSet(cs,hand[indexes[j]]);
+			return;
+		}
+	}
+}
+
+void fillColor(CardSet*cs, Card ** hand,int length){
+	int trefles[5];
+	int coeurs[5];
+	int carreaux[5];
+	int piques[5];
+
+	int n_trefles, n_coeurs, n_carreaux,n_piques;
+	n_trefles=n_coeurs=n_carreaux=n_piques=0;
 
 	for (int i = length-1 ; i >=0  ;i --){
-		if(counts[hand[i]->color]>=5)
-			return i;
+		if(hand[i]->color==TREFLE)
+			trefles[n_trefles++]=i;
+		if(hand[i]->color==COEUR)
+			coeurs[n_coeurs++]=i;
+		if(hand[i]->color==PIQUE)
+			piques[n_piques++]=i;
+		if(hand[i]->color==CARREAU)
+			carreaux[n_carreaux++]=i;
 	}
-	return -1;
+	if(n_coeurs>=5 || n_carreaux>=5 || n_trefles>=5 || n_piques>=5)
+		cs->type=COLOR;
+	if(n_coeurs>=5)
+		for(int i=0;i<5;i++)
+			addCardToSet(cs,hand[coeurs[i]]);
+	if(n_piques>=5)
+		for(int i=0;i<5;i++)
+			addCardToSet(cs,hand[piques[i]]);
+	if(n_trefles>=5)
+		for(int i=0;i<5;i++)
+			addCardToSet(cs,hand[trefles[i]]);
+	if(n_carreaux>=5)
+		for(int i=0;i<5;i++)
+			addCardToSet(cs,hand[carreaux[i]]);
 }
 
-/* returns the highest  pair IN A FULL
-	returns -1 if there is no Full
-*/
-int findFullPaire(Card ** hand,int length){
+void fillFull(CardSet*cs, Card ** hand,int length){
+	int counter[12];//compteur des cartes, 0 et 1 sont absents, donc
+	for(int i=0;i<12;i++)
+		counter[i]=0;
+	for(int i=0;i<length;i++)
+		counter[hand[i]->sign-2]++;
 
-	int brelan_beginning = findBrelan(hand,length);
-	if (brelan_beginning<0)
-		return -1;
-
-	int pairIndex = findPaire(hand+brelan_beginning+3,length - brelan_beginning-3);
-	return (pairIndex<0)? findPaire(hand,brelan_beginning): pairIndex;
-}
-
-/* returns the highest brelan IN A FULL
-	returns -1 if there is no Full
-*/
-int findFullBrelan(Card ** hand,int length){
-	int brelan_beginning = findBrelan(hand,length);
-	if (findFullPaire(hand,length)<0)
-		return -1;
-	return brelan_beginning;
-}
-
-/*
-	returns the index of the highest card in a colored flush,
-	returns -1 if not found
-*/
-int findColoredFlush(Card ** hand,int length){
-	int colored_flush_length=1;
-	Color current_color=hand[length-1]->color;
-	int last_index=length-1;
-
-	for (int i = length-2 ; i >=0  ;i --){
-		if(hand[i]->sign+1==hand[i+1]->sign &&
-			 hand[i]->color==current_color)
-			colored_flush_length++;
-		else if (hand[i]->sign==hand[i+1]->sign)
-			continue;
-		else{
-			last_index=i;
-			colored_flush_length=1;
+	int biggest_pair = -1;
+	int biggest_brelan = -1;
+	for(int i=0;i<length;i++)
+		if(counter[i]>=3){
+			biggest_brelan=i;
 		}
-		if (colored_flush_length>=5)
-			return last_index;
+	for(int i=0;i<length;i++)
+		if(counter[i]>=2 && i != biggest_brelan){
+			biggest_pair=i;
+		}
+	if(biggest_pair>0 && biggest_brelan>0){
+		for(int i=0;i<length;i++){
+			if(hand[i]->sign==(Sign)biggest_brelan)
+				addCardToSet(cs,hand[i]);
+		}
+		for(int i=0;i<length;i++){
+			if(hand[i]->sign==(Sign)biggest_pair)
+				addCardToSet(cs,hand[i]);
+		}
+		cs->type=BRELAN;
 	}
-	return -1;
+}
+
+void fillSquare(CardSet*cs, Card ** hand,int length){
+	for (int i = length-4 ; i >=0  ;i --){
+		if (hand[i]->sign == hand[i+1]->sign && hand[i+1]->sign == hand[i+2]->sign&& hand[i+2]->sign == hand[i+3]->sign){
+			cs->type=SQUARE;
+			addCardToSet(cs,hand[i+3]);
+			addCardToSet(cs,hand[i+2]);
+			addCardToSet(cs,hand[i+1]);
+			addCardToSet(cs,hand[i]);
+		}
+	}
+}
+
+void fillColoredFlush(CardSet*cs,Card ** hand,int length){
+	int indexes[5];
+	int flush_length=1;
+	indexes[0] = 	length - 1;
+	for (int i = length-2 ; i >=0  ;i --)
+	{
+		if (hand[i]->sign == hand[indexes[flush_length-1]]->sign)
+			continue;
+		if (hand[i]->sign+1 == hand[i+1]->sign &&hand[i]->color == hand[i+1]->color)
+			indexes[flush_length++]=i+1;
+		else{
+			flush_length=1;
+			indexes[0] = i;
+		}
+		if(flush_length >= 5){
+			cs->type=COLORED;
+			for(int j=0;j<5;j++)
+				addCardToSet(cs,hand[indexes[j]]);
+			return;
+		}
+	}
+}
+
+//==============================================================================
+//Remplis un cardset en fonction des cartes données en entrée
+void fillSet(CardSet*cs,Card **cards,int length){
+	void (*fillers[10])(CardSet*cs,Card ** hand,int length) = {
+		&fillColoredFlush,
+		&fillSquare,
+		&fillFull,
+		&fillColor,
+		&fillFlush,
+		&fillBrelan,
+		&fillDoublePair,
+		&fillPair
+	};
+	for(int i=0;i<10;i++){
+		fillers[i](cs,cards,length);
+		if(cs->type != UNDEFINED){
+			return;
+		}
+	}
+	fillSimple(cs,cards,length);
+}
+
+
+CardSet * makeCardSet(Card ** hand,int length){
+	CardSet * cs = malloc(sizeof(CardSet));
+	if(cs==NULL){
+		perror("malloc");
+		exit(1);
+	}
+	cs->set=malloc(sizeof(Card*)*length);
+	cs->remaining=malloc(sizeof(Card*)*length);
+	if(cs->set==NULL||cs->remaining==NULL){
+		perror("malloc");
+		exit(1);
+	}
+
+	for(int i=0;i<length;i++){
+		cs->remaining[i]=hand[i];
+	}
+	cs->set_size=0;
+	cs->total_size=length;
+	cs->type=UNDEFINED;
+	return cs;
+}
+
+/** create a cardset**/
+CardSet * initCardSet(Card ** hand,int length){
+	CardSet* cs = makeCardSet(hand,length);
+	fillSet(cs,hand,length);
+	return cs;
+}
+
+/** create a cardset**/
+void destroyCardSet(CardSet *cs){
+	free(cs->remaining);
+	free(cs->set);
+	free(cs);
 }

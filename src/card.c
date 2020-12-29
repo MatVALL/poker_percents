@@ -4,7 +4,12 @@
 	makes a malloc
 **/
 Card * makeCard(Color c, Sign s){
-	Card * card = (Card*)malloc(sizeof(Card));
+	Card * card = malloc(sizeof(Card));
+	if(card==NULL)
+	{
+		perror("malloc");
+		exit(1);
+	}
 	card->sign = s;
 	card->color = c;
 	return card;
@@ -15,38 +20,31 @@ Card * makeCard(Color c, Sign s){
 void destroyCard(Card * c){
 	free(c);
 }
-/** Returns a string containing the text from a card
-	Malloc is made on the string, so free it when it is over
-**/
-char * cardToText(Card c){
-	char sign[3];
-	char color[3];
+
+void printCard(Card c){
 	switch (c.color){
 		case COEUR:
-			sprintf(color,"<3");break;
+			printf("<3");break;
 		case PIQUE:
-			sprintf(color,"->");break;
+			printf("->");break;
 		case TREFLE:
-			sprintf(color,"-3");break;
+			printf("-3");break;
 		case CARREAU:
-			sprintf(color,"<>");break;
+			printf("<>");break;
 		default:
-			sprintf(color,"??");
+			printf("??");
 	};
 
 	switch (c.sign){
 		case VALET:
-			sprintf(sign,"V");break;
+			printf("V");break;
 		case DAME:
-			sprintf(sign,"D");break;
+			printf("D");break;
 		case ROI:
-			sprintf(sign,"R");break;
+			printf("R");break;
 		case AS:
-			sprintf(sign,"A");break;
+			printf("A");break;
 		default:
-			sprintf(sign,"%d",c.sign);
+			printf("%d",c.sign);
 	};
-	char* text=(char*)malloc(sizeof(char)*5);
-	sprintf(text,"%s%s",sign,color);
-	return text;
 }

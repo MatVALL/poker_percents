@@ -8,13 +8,14 @@
 #define HANDSIZE 2
 #define DECKSIZE 52
 
+//represente la situation du jeu.
 typedef struct game{
-	Card * hand[HANDSIZE];
-	Card * deck[DECKSIZE-HANDSIZE];
+	Card ** hand;
+	Card ** drawn;
+	int n_drawn;
 }Game;
 
-Game * makeGame();
+Game * makeGame(char * path);
 void destroyGame(Game * g);
-int isBetter(Card * hand1[2],Card * hand2[2],Card ** deck,int cards_drawn);
 void sortHand(Card ** cards, int length);
 #endif

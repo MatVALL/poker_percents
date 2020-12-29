@@ -1,0 +1,3 @@
+#version_check_version=0.10.0-3build2
+#requires check librairie
+#https://libcheck.github.io/check/web/install.html

@@ -3,17 +3,27 @@
 #include <stdio.h>
 
 #include "test_hands.h"
+#include "test_better.h"
+#include "test_utils.h"
+
+int testSuite(Suite * s){
+  SRunner *runner = srunner_create(s);
+  srunner_run_all(runner, CK_NORMAL);
+  int failed = srunner_ntests_failed(runner);
+  srunner_free(runner);
+  return failed;
+}
 
 int main(){
-  int no_failed = 0;
-  Suite *s;
-  SRunner *runner;
+  int failed = 0;
 
-  s = testHands();
-  runner = srunner_create(s);
+  Suite * hands = testHands();
+  Suite * better = testIsBetter();
+  Suite * utils = testUtils();
 
-  srunner_run_all(runner, CK_NORMAL);
-  no_failed = srunner_ntests_failed(runner);
-  srunner_free(runner);
-  return no_failed != 0;
+  failed += testSuite(utils);
+  failed += testSuite(hands);
+  failed += testSuite(better);
+
+  return failed != 0;
 }

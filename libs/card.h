@@ -1,5 +1,5 @@
-#ifndef __POKer_cards___
-#define __POKer_cards___
+#ifndef __POKER_cards___
+#define __POKER_cards___
 
 #include<stdio.h>
 #include<stdlib.h>
@@ -15,7 +15,7 @@ typedef struct card{
 }Card;
 
 Card * makeCard(Color c, Sign s);
-char * cardToText(Card c);
+void printCard(Card c);
 void destroyCard(Card * c);
 
 #endif

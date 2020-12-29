@@ -1,0 +1,17 @@
+# une ligne de commentaires(doit COMMENCER par un #, pas d'espace sinon erreurs)
+# > pic
+# < coeur
+# # carreau
+# % trefle
+# 14 : as
+# 13 : roi
+# 12 : dame
+# 11 : valet
+# la main du joueur :
+1> 1#
+# premier tirage : (optionnel, retirer la ligne)
+4< 5< 5%
+# second tirage :(optionnel, retirer la ligne)
+3#
+# troisieme tirage:(optionnel, retirer la ligne)
+5#

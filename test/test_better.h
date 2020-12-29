@@ -5,5 +5,4 @@
 #include "game.h"
 #include "hands.h"
 
-Suite* testHands();
-Card ** makeCardsArrayFromArgs(int n_cards,...);
+Suite* testIsBetter(void);

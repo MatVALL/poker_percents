@@ -23,17 +23,8 @@ START_TEST(none)
     5,PIQUE,
     VALET,COEUR
   );
-  ck_assert_int_eq(-1,findPaire(c,5));
-  ck_assert_int_eq(-1,findDoublePaireSecond(c,5));
-  ck_assert_int_eq(-1,findDoublePaireHighest(c,5));
-  ck_assert_int_eq(-1,findPaire(c,5));
-  ck_assert_int_eq(-1,findBrelan(c,5));
-  ck_assert_int_eq(-1,findFlush(c,5));
-  ck_assert_int_eq(-1,findColor(c,5));
-  ck_assert_int_eq(-1,findFullPaire(c,5));
-  ck_assert_int_eq(-1,findFullBrelan(c,5));
-  ck_assert_int_eq(-1,findColoredFlush(c,5));
-
+  CardSet * cs = initCardSet(c,5);
+  ck_assert_int_eq(cs->type,SINGLE);
 }
 END_TEST
 
@@ -44,7 +35,8 @@ START_TEST(test_pair)
     3,COEUR,
     3,CARREAU
   );
-  ck_assert_int_eq(2,findPaire(c,3));
+  CardSet * cs = initCardSet(c,3);
+  ck_assert_int_eq(cs->type,PAIR);
 }
 END_TEST
 
@@ -57,9 +49,8 @@ START_TEST(test_double_pair)
     AS,PIQUE,
     AS,PIQUE
   );
-  ck_assert_int_eq(2,findDoublePaireSecond(c,5));
-  ck_assert_int_eq(4,findDoublePaireHighest(c,5));
-
+  CardSet * cs = initCardSet(c,5);
+  ck_assert_int_eq(cs->type,DOUBLE);
 }
 END_TEST
 
@@ -73,8 +64,8 @@ START_TEST(test_brelan)
     AS,COEUR,
     AS,TREFLE
   );
-  ck_assert_int_eq(3,findBrelan(c,6));
-
+  CardSet * cs = initCardSet(c,5);
+  ck_assert_int_eq(cs->type,BRELAN);
 }
 END_TEST
 
@@ -86,10 +77,11 @@ START_TEST(test_flush)
     3,CARREAU,
     3,PIQUE,
     4,PIQUE,
-    5,PIQUE,
+    5,TREFLE,
     AS,PIQUE
   );
-  ck_assert_int_eq(5,findFlush(c,7));
+  CardSet * cs = initCardSet(c,7);
+  ck_assert_int_eq(cs->type,FLUSH);
 }
 END_TEST
 
@@ -104,7 +96,8 @@ START_TEST(test_flush2)
     ROI,PIQUE,
     AS,PIQUE
   );
-  ck_assert_int_eq(6,findFlush(c,7));
+  CardSet * cs = initCardSet(c,7);
+  ck_assert_int_eq(cs->type,FLUSH);
 }
 END_TEST
 
@@ -119,7 +112,8 @@ START_TEST(test_color)
     ROI,TREFLE,
     AS,PIQUE
   );
-  ck_assert_int_eq(6,findColor(c,7));
+  CardSet * cs = initCardSet(c,7);
+  ck_assert_int_eq(cs->type,COLOR);
 }
 END_TEST
 
@@ -134,8 +128,8 @@ START_TEST(test_full)
     VALET,PIQUE,
     VALET,CARREAU
   );
-  ck_assert_int_eq(1,findFullPaire(c,7));
-  ck_assert_int_eq(4,findFullBrelan(c,7));
+  CardSet * cs = initCardSet(c,7);
+  ck_assert_int_eq(cs->type,FULL);
 }
 END_TEST
 
@@ -150,24 +144,26 @@ START_TEST(test_colored_flush)
     ROI,PIQUE,
     AS,PIQUE
   );
-  ck_assert_int_eq(6,findColoredFlush(c,7));
+  CardSet * cs = initCardSet(c,7);
+  ck_assert_int_eq(cs->type,COLORED);
+
 }
 END_TEST
 
 Suite* testHands(){
-  TCase *tc_core = tcase_create("Core");
+  TCase *tc_core = tcase_create("CoreHands");
   Suite* s = suite_create("TestHands");
 
-  tcase_add_test(tc_core, none);
-  tcase_add_test(tc_core, test_pair);
+//  tcase_add_test(tc_core, none);
+//  tcase_add_test(tc_core, test_pair);
   tcase_add_test(tc_core, test_double_pair);
-  tcase_add_test(tc_core, test_brelan);
+/*  tcase_add_test(tc_core, test_brelan);
   tcase_add_test(tc_core, test_flush);
   tcase_add_test(tc_core, test_flush2);
   tcase_add_test(tc_core, test_color);
   tcase_add_test(tc_core, test_full);
   tcase_add_test(tc_core, test_colored_flush);
-
+*/
   suite_add_tcase(s, tc_core);
   return s;
 }
