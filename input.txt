@@ -8,10 +8,10 @@
 # 12 : dame
 # 11 : valet
 # la main du joueur :
-1> 1#
+2> 4#
 # premier tirage : (optionnel, retirer la ligne)
-4< 5< 5%
+7< 5< 3%
 # second tirage :(optionnel, retirer la ligne)
-3#
+4#
 # troisieme tirage:(optionnel, retirer la ligne)
-5#
+7#

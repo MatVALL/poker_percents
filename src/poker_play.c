@@ -28,9 +28,9 @@ int cardIsInGame(Card * c, Game * g){
 		if(g->drawn[i]->sign==c->sign && g->drawn[i]->color==c->color)
 			return 1;
 	}
-	if(g->drawn[0]->sign==c->sign && g->drawn[0]->color==c->color)
+	if(g->n_drawn>0&&  g->drawn[0]->sign==c->sign && g->drawn[0]->color==c->color)
 		return 1;
-	if(g->drawn[1]->sign==c->sign && g->drawn[1]->color==c->color)
+	if(g->n_drawn>1&& g->drawn[1]->sign==c->sign && g->drawn[1]->color==c->color)
 		return 1;
 	return 0;
 }
@@ -43,7 +43,6 @@ double getProba(Game * g){
 	sortHand(game_hand,2+g->n_drawn);
 
 	for(int i = 0; i < 52; i++){
-		printf("!!!\n");
 		for(int j = 0; j < 52; j++){
 			Color c1 = i%4;
 			Color c2 = j%4;
@@ -70,8 +69,10 @@ double getProba(Game * g){
 					n_gagnees++;
 				}
 				else{
-					//printCard(*card1);
-					//printf("\t%s\n",cardToText(*card2));
+					printf("BETTER HAND :");
+					printCard(*card1);
+					printCard(*card2);
+					printf("\n");
 				}
 			}
 			free(simulated_hand);
@@ -91,10 +92,9 @@ int main(int argc, char**argv){
 	}
 	printf("creating game\n");
 	Game * g = makeGame(argv[1]);
-	//printf("printing game\n");
-	//printGame(g);
+
 	printf("calculating ...\n");
-	getProba(g);
+	printf("proba : %lf\n",getProba(g));
 	printf("done.\n");
 	destroyGame(g);
 	return 0;

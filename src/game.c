@@ -5,15 +5,15 @@
 	tri pas opti mais 7 cartes max.**/
 void sortHand(Card ** cards, int length){
 	for (int i =0; i < length-1 ; i++){
-		int max_ind=i;
+		int min_ind=i;
 		for (int card = i+1; card < length; card ++){
-			max_ind = cards[card]->sign>cards[max_ind]->sign?card:max_ind;
+			min_ind = cards[card]->sign<cards[min_ind]->sign?card:min_ind;
 			if (cards[card]->sign==1)
-				max_ind = card;
+				min_ind = card;
 		}
 		Card*tmp = cards[i];
-		cards[i] =cards[max_ind];
-		cards[max_ind]=tmp;
+		cards[i] =cards[min_ind];
+		cards[min_ind]=tmp;
 	}
 }
 
@@ -71,6 +71,7 @@ Game *  makeGame(char * path){
 			continue;
 		int sign1, sign2, sign3;
 		char c1, c2, c3;
+		g->n_drawn=0;
 		if(nread==2 && sscanf(line,"%d%c %d%c",&sign1,&c1,&sign2,&c2)>=2){
 			g->hand[0]=makeCard(getColor(c1),sign1==1?14:sign1);
 			g->hand[1]=makeCard(getColor(c2),sign2==1?14:sign1);

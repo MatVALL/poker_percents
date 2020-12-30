@@ -1,4 +1,5 @@
 #include "hands.h"
+#include "game.h"
 
 void swap(Card ** cards,int ind1, int ind2){
 	Card * tmp = cards[ind2];
@@ -6,19 +7,17 @@ void swap(Card ** cards,int ind1, int ind2){
 	cards[ind1] = tmp;
 }
 
-//TPDP FIX:
-
 void removeFromRemaining(CardSet * cs, Card * c){
-		for(int i = 0 ; i < cs->total_size-cs->set_size-1;i++){
-			if(cs->remaining[i]==c){
-				swap(cs->remaining,i,cs->total_size-cs->set_size-1);
-				return;
-			}
+	for(int i = 0 ; i < cs->total_size-cs->set_size-1;i++){
+		if(cs->remaining[i]==c){
+			swap(cs->remaining,i,cs->total_size-cs->set_size-1);
+			return;
 		}
+	}
 }
 
 void addToSet(CardSet * cs, Card * c){
-		cs->set[cs->set_size++]=c;
+	cs->set[cs->set_size++]=c;
 }
 
 
@@ -66,20 +65,22 @@ void fillDoublePair(CardSet*cs ,Card ** hand,int length){
 
 	for(int i=0;i<14;i++)
 		if(counter[i]>=2)
-			biggest_pair=i;
+			biggest_pair=i+2;
 	for(int i=0;i<14;i++)
-		if(counter[i]>=2 && i != biggest_pair)
-			secd_biggest=i;
+		if(counter[i]>=2 && i+2 != biggest_pair)
+			secd_biggest=i+2;
 
 	if(biggest_pair<0 || secd_biggest<0)
 		return;
 
 	for(int i=0;i<length;i++)
-		if(hand[i]->sign==(Sign)biggest_pair)
+		if(hand[i]->sign==biggest_pair){
 			addCardToSet(cs,hand[i]);
+		}
 	for(int i=0;i<length;i++)
-		if(hand[i]->sign==(Sign)secd_biggest)
+		if(hand[i]->sign==(Sign)secd_biggest){
 			addCardToSet(cs,hand[i]);
+		}
 	cs->type=DOUBLE;
 }
 
@@ -87,12 +88,14 @@ void fillFlush(CardSet*cs ,Card ** hand,int length){
 	int indexes[5];
 	int flush_length=1;
 	indexes[0] = 	length - 1;
+
 	for (int i = length-2 ; i >=0  ;i --)
 	{
-		if (hand[i]->sign == hand[indexes[flush_length-1]]->sign)
+		if (hand[i]->sign == hand[i+1]->sign)
 			continue;
-		if (hand[i]->sign+1 == hand[i+1]->sign)
-			indexes[flush_length++]=i+1;
+		if (hand[i]->sign+1 == hand[i+1]->sign){
+			indexes[flush_length++]=i;
+		}
 		else{
 			flush_length=1;
 			indexes[0] = i;
@@ -103,6 +106,12 @@ void fillFlush(CardSet*cs ,Card ** hand,int length){
 				addCardToSet(cs,hand[indexes[j]]);
 			return;
 		}
+	}
+	if(hand[0]->sign==2 && hand[length-1]->sign==AS && flush_length==4){
+		indexes[4]=length-1;
+		cs->type=FLUSH;
+		for(int j=0;j<5;j++)
+			addCardToSet(cs,hand[indexes[j]]);
 	}
 }
 
@@ -142,32 +151,32 @@ void fillColor(CardSet*cs, Card ** hand,int length){
 }
 
 void fillFull(CardSet*cs, Card ** hand,int length){
-	int counter[12];//compteur des cartes, 0 et 1 sont absents, donc
-	for(int i=0;i<12;i++)
+	int counter[13];//compteur des cartes, 0 et 1 sont absents, donc
+	for(int i=0;i<13;i++)
 		counter[i]=0;
 	for(int i=0;i<length;i++)
 		counter[hand[i]->sign-2]++;
 
 	int biggest_pair = -1;
 	int biggest_brelan = -1;
-	for(int i=0;i<length;i++)
+	for(int i=0;i<13;i++)
 		if(counter[i]>=3){
-			biggest_brelan=i;
+			biggest_brelan=i+2;
 		}
-	for(int i=0;i<length;i++)
-		if(counter[i]>=2 && i != biggest_brelan){
-			biggest_pair=i;
+	for(int i=0;i<13;i++)
+		if(counter[i]>=2 && i+2 != biggest_brelan){
+			biggest_pair=i+2;
 		}
-	if(biggest_pair>0 && biggest_brelan>0){
+	if(biggest_pair>=0 && biggest_brelan>=0){
 		for(int i=0;i<length;i++){
-			if(hand[i]->sign==(Sign)biggest_brelan)
+			if(hand[i]->sign==biggest_brelan)
 				addCardToSet(cs,hand[i]);
 		}
 		for(int i=0;i<length;i++){
-			if(hand[i]->sign==(Sign)biggest_pair)
+			if(hand[i]->sign==biggest_pair)
 				addCardToSet(cs,hand[i]);
 		}
-		cs->type=BRELAN;
+		cs->type=FULL;
 	}
 }
 
@@ -187,29 +196,47 @@ void fillColoredFlush(CardSet*cs,Card ** hand,int length){
 	int indexes[5];
 	int flush_length=1;
 	indexes[0] = 	length - 1;
+	Color flush_color = hand[indexes[0]]->color;
 	for (int i = length-2 ; i >=0  ;i --)
 	{
-		if (hand[i]->sign == hand[indexes[flush_length-1]]->sign)
-			continue;
-		if (hand[i]->sign+1 == hand[i+1]->sign &&hand[i]->color == hand[i+1]->color)
-			indexes[flush_length++]=i+1;
-		else{
-			flush_length=1;
-			indexes[0] = i;
+		if(flush_color==hand[i]->color
+				&& hand[i]->sign+1 == hand[i+1]->sign){
+			indexes[flush_length++]=i;
 		}
-		if(flush_length >= 5){
+		else if (hand[i]->sign == hand[i+1]->sign){
+			continue;
+		}
+		else{
+			indexes[flush_length=0]=i;
+		}
+		if(flush_length>=5){
+
+			for(int i=0;i<5;i++){
+					addCardToSet(cs,hand[indexes[i]]);
+			}
 			cs->type=COLORED;
-			for(int j=0;j<5;j++)
-				addCardToSet(cs,hand[indexes[j]]);
 			return;
 		}
+	}
+	if(flush_length==4 && hand[indexes[3]]->sign==2){
+		for(int i=length-1;i>=0 && hand[i]->sign==AS;i--)
+			if(hand[i]->color==flush_color){
+				indexes[flush_length++]=i;
+				break;
+			}
+	}
+	if(flush_length>=5){
+		for(int i=0;i<5;i++){
+				addCardToSet(cs,hand[indexes[i]]);
+		}
+		cs->type=COLORED;
 	}
 }
 
 //==============================================================================
 //Remplis un cardset en fonction des cartes données en entrée
 void fillSet(CardSet*cs,Card **cards,int length){
-	void (*fillers[10])(CardSet*cs,Card ** hand,int length) = {
+	void (*fillers[8])(CardSet*cs,Card ** hand,int length) = {
 		&fillColoredFlush,
 		&fillSquare,
 		&fillFull,
@@ -219,7 +246,7 @@ void fillSet(CardSet*cs,Card **cards,int length){
 		&fillDoublePair,
 		&fillPair
 	};
-	for(int i=0;i<10;i++){
+	for(int i=0;i<8;i++){
 		fillers[i](cs,cards,length);
 		if(cs->type != UNDEFINED){
 			return;
@@ -253,6 +280,7 @@ CardSet * makeCardSet(Card ** hand,int length){
 
 /** create a cardset**/
 CardSet * initCardSet(Card ** hand,int length){
+	sortHand(hand, length);
 	CardSet* cs = makeCardSet(hand,length);
 	fillSet(cs,hand,length);
 	return cs;
