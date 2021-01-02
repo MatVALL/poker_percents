@@ -1,17 +1,21 @@
-# une ligne de commentaires(doit COMMENCER par un #, pas d'espace sinon erreurs)
+# une ligne de commentaires
+#(doit COMMENCER par un #)
+#=================================
+#			COULEURS
+#=================================
 # > pic
 # < coeur
 # # carreau
 # % trefle
+#=================================
+#			SIGNES
+#=================================
 # 14 : as
 # 13 : roi
 # 12 : dame
 # 11 : valet
-# la main du joueur :
-2> 4#
-# premier tirage : (optionnel, retirer la ligne)
-7< 5< 3%
-# second tirage :(optionnel, retirer la ligne)
-4#
-# troisieme tirage:(optionnel, retirer la ligne)
-7#
+#
+12# 12<
+5> 6> 7>
+6#
+8>

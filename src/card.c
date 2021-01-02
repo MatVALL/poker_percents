@@ -22,6 +22,19 @@ void destroyCard(Card * c){
 }
 
 void printCard(Card c){
+	switch (c.sign){
+		case VALET:
+			printf(" V:");break;
+		case DAME:
+			printf(" D:");break;
+		case ROI:
+			printf(" R:");break;
+		case AS:
+			printf(" A:");break;
+		default:
+			printf("%2d:",c.sign);
+	};
+
 	switch (c.color){
 		case COEUR:
 			printf("<3");break;
@@ -33,18 +46,5 @@ void printCard(Card c){
 			printf("<>");break;
 		default:
 			printf("??");
-	};
-
-	switch (c.sign){
-		case VALET:
-			printf("V");break;
-		case DAME:
-			printf("D");break;
-		case ROI:
-			printf("R");break;
-		case AS:
-			printf("A");break;
-		default:
-			printf("%d",c.sign);
 	};
 }

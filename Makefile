@@ -1,5 +1,5 @@
 CC=gcc
-FLAGS=-std=c99 -W -Wall -pedantic -g
+FLAGS=-std=c99 -W -Wall -pedantic -g -fno-stack-protector
 LIBS= -lm 	#utilisation de math.h
 
 _OBJS=card.o\

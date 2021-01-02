@@ -39,6 +39,7 @@ void fillPair(CardSet* cs,Card ** hand,int length){
 			addCardToSet(cs,hand[i+1]);
 			addCardToSet(cs,hand[i]);
 			cs->type=PAIR;
+			return;
 		}
 	}
 }
@@ -50,6 +51,7 @@ void fillBrelan(CardSet*cs ,Card ** hand,int length){
 			addCardToSet(cs,hand[i+1]);
 			addCardToSet(cs,hand[i]);
 			cs->type=BRELAN;
+			return;
 		}
 	}
 }
@@ -134,20 +136,25 @@ void fillColor(CardSet*cs, Card ** hand,int length){
 		if(hand[i]->color==CARREAU)
 			carreaux[n_carreaux++]=i;
 	}
-	if(n_coeurs>=5 || n_carreaux>=5 || n_trefles>=5 || n_piques>=5)
-		cs->type=COLOR;
+	if(n_coeurs<5 && n_carreaux<5 && n_trefles<5 && n_piques<5)
+		return;
+	cs->type=COLOR;
 	if(n_coeurs>=5)
-		for(int i=0;i<5;i++)
+		for(int i=0;i<5;i++){
 			addCardToSet(cs,hand[coeurs[i]]);
+		}
 	if(n_piques>=5)
-		for(int i=0;i<5;i++)
+		for(int i=0;i<5;i++){
 			addCardToSet(cs,hand[piques[i]]);
+		}
 	if(n_trefles>=5)
-		for(int i=0;i<5;i++)
+		for(int i=0;i<5;i++){
 			addCardToSet(cs,hand[trefles[i]]);
+		}
 	if(n_carreaux>=5)
-		for(int i=0;i<5;i++)
+		for(int i=0;i<5;i++){
 			addCardToSet(cs,hand[carreaux[i]]);
+		}
 }
 
 void fillFull(CardSet*cs, Card ** hand,int length){
@@ -168,15 +175,16 @@ void fillFull(CardSet*cs, Card ** hand,int length){
 			biggest_pair=i+2;
 		}
 	if(biggest_pair>=0 && biggest_brelan>=0){
-		for(int i=0;i<length;i++){
+		for(int i=length-1;i>=0 && cs->set_size<3;i--){
 			if(hand[i]->sign==biggest_brelan)
 				addCardToSet(cs,hand[i]);
 		}
-		for(int i=0;i<length;i++){
+		for(int i=length-1;i>=0 && cs->set_size<5;i--){
 			if(hand[i]->sign==biggest_pair)
 				addCardToSet(cs,hand[i]);
 		}
 		cs->type=FULL;
+		return;
 	}
 }
 
@@ -188,6 +196,7 @@ void fillSquare(CardSet*cs, Card ** hand,int length){
 			addCardToSet(cs,hand[i+2]);
 			addCardToSet(cs,hand[i+1]);
 			addCardToSet(cs,hand[i]);
+			return;
 		}
 	}
 }
@@ -282,6 +291,7 @@ CardSet * makeCardSet(Card ** hand,int length){
 CardSet * initCardSet(Card ** hand,int length){
 	sortHand(hand, length);
 	CardSet* cs = makeCardSet(hand,length);
+
 	fillSet(cs,hand,length);
 	return cs;
 }

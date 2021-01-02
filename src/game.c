@@ -66,15 +66,16 @@ Game *  makeGame(char * path){
 		exit(1);
 	}
 	int nread = 2;//
+	g->n_drawn=0;
 	while(fgets(line,10000,f)){
 		if(line[0]=='#')
 			continue;
 		int sign1, sign2, sign3;
 		char c1, c2, c3;
-		g->n_drawn=0;
+
 		if(nread==2 && sscanf(line,"%d%c %d%c",&sign1,&c1,&sign2,&c2)>=2){
 			g->hand[0]=makeCard(getColor(c1),sign1==1?14:sign1);
-			g->hand[1]=makeCard(getColor(c2),sign2==1?14:sign1);
+			g->hand[1]=makeCard(getColor(c2),sign2==1?14:sign2);
 			nread=3;
 		}
 		else if(nread==3 && sscanf(line,"%d%c %d%c %d%c",&sign1,&c1,&sign2,&c2,&sign3,&c3)>=6){

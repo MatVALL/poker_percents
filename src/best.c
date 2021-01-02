@@ -28,7 +28,6 @@ Card** concatCards(Card ** cards1, int size1,Card ** cards2, int size2){
 }*/
 int compareRemainig(CardSet  * cs1,CardSet  * cs2,int max){
 	int stop = min(cs1->total_size-cs1->set_size-1,max);
-	printf("%d\n",cs1->total_size);
 	for(int i=0;i<stop;i++)
 		if(cs1->remaining[i]->sign != cs2->remaining[i]->sign)
 			return cs1->remaining[i]->sign - cs2->remaining[i]->sign;
@@ -79,9 +78,10 @@ int compareColor(CardSet  * cs1,CardSet  * cs2){
 }
 
 int compareFull(CardSet  * cs1,CardSet  * cs2){
-	for(int i=0;i<cs1->set_size;i++)
+	for(int i=0;i<cs1->set_size;i++){
 		if(cs1->set[i]->sign != cs2->set[i]->sign)
 			return cs1->set[i]->sign - cs2->set[i]->sign;
+	}
 	return 0;
 }
 
@@ -133,10 +133,15 @@ int isBetter(Card ** hand1,Card ** hand2,int size){
 	CardSet * cs1 = initCardSet(hand1,size);
 	CardSet * cs2 = initCardSet(hand2,size);
 
-	if(cs1->type != cs2->type )
-		return cs1->type - cs2->type;
+	if(cs1->type != cs2->type ){
+		int result = cs1->type - cs2->type;
+		destroyCardSet(cs1);
+		destroyCardSet(cs2);
+		return result;
+	}
 
 	int result =  compareSameType(cs1,cs2);
+
 	destroyCardSet(cs1);
 	destroyCardSet(cs2);
 	return result;
